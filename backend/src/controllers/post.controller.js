@@ -7,6 +7,13 @@ const client = new ImageKit({
 
 export const createPostController = async (req, res) => {
   try {
+    if (!req.file || !req.body.caption) {
+      return res.status(400).json({
+        success: false,
+        message: "Caption and Image file is required.",
+      });
+    }
+
     const file = await client.files.upload({
       file: await toFile(Buffer.from(req.file.buffer), 'file'),
       fileName: req.file.originalname,
@@ -19,11 +26,17 @@ export const createPostController = async (req, res) => {
       user: req.user.id
     })
 
-    res.status(201).json({
-      message: 'Post Created Successfully',
-      post
-    })
+    return res.status(201).json({
+      success: true,
+      message: "Post created successfully.",
+      post,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: 'Upload failed', error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create post.",
+    });
+
   }
 }
