@@ -1,11 +1,17 @@
 import Router from 'express'
-import { createPostController } from '../controllers/post.controller.js';
+import { createPostController, getPostController, getPostDetailsController } from '../controllers/post.controller.js';
 import uploadMiddleware from '../middlewares/upload.middleware.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 
 const postRouter = Router()
 
-// ? ==================== POST Api [protected] ======================== //
+// ? ==================== Create POST Api [protected] ======================== //
 postRouter.post('/', authMiddleware, uploadMiddleware, createPostController)
+
+// ? =================== Get Post Api [protected] ==================== //
+postRouter.get('/', authMiddleware, getPostController)
+
+// ? =================== Get Post Details Api [protected] ==================== //
+postRouter.get('/details/:postId', authMiddleware, getPostDetailsController)
 
 export default postRouter;

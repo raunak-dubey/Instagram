@@ -5,6 +5,7 @@ const client = new ImageKit({
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY
 })
 
+// ? =================== Create Post Controller ==================== //
 export const createPostController = async (req, res) => {
   try {
     if (!req.file || !req.body.caption) {
@@ -36,6 +37,67 @@ export const createPostController = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to create post.",
+    });
+
+  }
+}
+
+// ? =================== Get Post Controller ==================== //
+export const getPostController = async (req, res) => {
+  try {
+    const post = await postModel.find({
+      user: req.user.id
+    })
+
+    return res.status(200).json({
+      success: true,
+      message: 'Post Fetch Successfully',
+      post,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch post.",
+    });
+
+  }
+}
+
+// ? =================== Get Post Details Controller ==================== //
+export const getPostDetailsController = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const postId = req.params.postId;
+
+    const post = await postModel.findById(postId)
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found.",
+      });
+    }
+
+    const isValidUser = post.user.toString() === userId;
+
+    if (!isValidUser) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden Content.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Post Fetch Successfully',
+      post,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch post.",
     });
 
   }
