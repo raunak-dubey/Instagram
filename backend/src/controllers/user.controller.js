@@ -37,7 +37,7 @@ export const followUser = async (req, res) => {
         });
 
         if (existingFollow) {
-            return res.status(400).json({
+            return res.status(409).json({
                 success: false,
                 message: "You are already following this user."
             });
@@ -46,7 +46,8 @@ export const followUser = async (req, res) => {
         // ? Add follower and following
         const follow = await followModel.create({
             follower: userId,
-            following: followUserId
+            following: followUserId,
+            status: userExists.isPrivate ? 'pending' : 'accepted'
         });
 
         return res.status(201).json({
@@ -56,13 +57,6 @@ export const followUser = async (req, res) => {
         });
 
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({
-                success: false,
-                message: "You are already following this user."
-            });
-        }
-
         return res.status(500).json({
             success: false,
             message: "Failed to follow user.",
