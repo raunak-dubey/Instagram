@@ -13,13 +13,14 @@
         },
         status: {
             type: String,
-            enum: ['pending', 'accepted', 'rejected'],
-            default: 'accepted'
+            enum: ['pending', 'accepted'],
+            default: 'pending'
         }
 
     }, {timestamps: true})
 
     followSchema.index({ follower: 1, following: 1 }, { unique: true });
+    followSchema.index({ following: 1, status: 1 });
 
     const followModel = mongoose.model('Follow', followSchema)
     export default followModel;

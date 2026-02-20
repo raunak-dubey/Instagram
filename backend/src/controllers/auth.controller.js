@@ -5,7 +5,7 @@ import generateToken from '../utils/generateToken.js';
 // ? =================== Register Api ==================== //
 export const registerUser = async (req, res) => {
     try {
-        const { username, email, password, bio, avatar } = req.body;
+        const { username, email, password, bio, avatar, isPrivate } = req.body;
 
         if (!username || !email || !password) {
             return res.status(400).json({
@@ -33,6 +33,7 @@ export const registerUser = async (req, res) => {
             email,
             bio,
             avatar,
+            isPrivate,
             password: hashedPassword
         })
 
