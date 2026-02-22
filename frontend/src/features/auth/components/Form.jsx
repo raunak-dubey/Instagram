@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import "../styles/form.scss";
 import useAuth from "../hooks/useAuth";
@@ -57,49 +57,52 @@ const Form = ({ mode = "login" }) => {
     refs[key]?.current?.focus();
   };
 
-  const navigate = useNavigate();
-
+  
   // ? ================= VALIDATION =================
-
+  
   const validateLogin = () => {
     const e = {};
-
+    
     if (!formData.identifier.trim()) {
       e.identifier =
-        loginMethod === "email" ? "Email required" : "Username required";
+      loginMethod === "email" ? "Email required" : "Username required";
     } else if (loginMethod === "email" && !isEmail(formData.identifier)) {
       e.identifier = "Invalid email";
     }
-
+    
     if (!formData.password) e.password = "Password required";
-
+    
     setErrors(e);
-
+    
     if (Object.keys(e).length) focusFirstError(e);
-
+    
     return Object.keys(e).length === 0;
   };
-
+  
   const validateRegister = () => {
     const e = {};
-
+    
     if (!formData.email) e.email = "Email required";
     else if (!isEmail(formData.email)) e.email = "Invalid email";
-
+    
     if (!formData.username) e.username = "Username required";
     if (!formData.password) e.password = "Password required";
     if (formData.bio.length > 150) e.bio = "Bio max 150 characters";
-
+    
     setErrors(e);
-
+    
     if (Object.keys(e).length) focusFirstError(e);
-
+    
     return Object.keys(e).length === 0;
   };
-
+  
   // ? ================= SUBMIT =================
+  const navigate = useNavigate();
+  const { user, loading, handleLogin, handleRegister } = useAuth();
 
-  const { loading, handleLogin, handleRegister } = useAuth();
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user, navigate]);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -115,7 +118,6 @@ const Form = ({ mode = "login" }) => {
       });
 
       resetForm();
-      navigate("/");
     } catch (err) {
       setAlert({ type: "error", message: err.message || "Login failed" });
     }
@@ -137,8 +139,6 @@ const Form = ({ mode = "login" }) => {
       });
 
       resetForm();
-      navigate("/");
-
     } catch (err) {
       setAlert({
         type: "error",
@@ -264,7 +264,7 @@ const Form = ({ mode = "login" }) => {
 
               <button className="btn" disabled={loading} type="submit">
                 {loading ? (
-                  <div className="spinner" />
+                  'Loading...'
                 ) : isLogin ? (
                   "Login"
                 ) : (
