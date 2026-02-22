@@ -21,9 +21,8 @@ export const registerUser = async (req, res) => {
         if (isUserAlreadyExists)
             return res.status(409).json({
                 success: false,
-                message: `User already exists with this ${
-                    isUserAlreadyExists.email === email ? "email" : "username"
-                }.`,
+                message: `User already exists with this ${isUserAlreadyExists.email === email ? "email" : "username"
+                    }.`,
             });
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -112,4 +111,35 @@ export const loginUser = async (req, res) => {
         });
     }
 
+}
+
+// ? =================== Get Me Api ==================== //
+export const getMeController = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await userModel.findById(userId).select("-password")
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                bio: user.bio,
+                avatar: user.avatar,
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching user data.",
+        });
+    }
 }

@@ -1,33 +1,39 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router";
-import axios from "axios";
 import "../styles/form.scss";
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 const Form = ({ mode = "login" }) => {
   const isLogin = mode === "login";
 
   const [loginMethod, setLoginMethod] = useState("email");
-  const [loading, setLoading] = useState(false);
 
   const [alert, setAlert] = useState(null);
 
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     identifier: "",
     email: "",
     username: "",
     password: "",
     bio: "",
     privateAccount: false,
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
+
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setErrors({});
+    setAlert(null);
+  };
 
   const [errors, setErrors] = useState({});
 
-  const refs = {
-    identifier: useRef(null),
-    email: useRef(null),
-    username: useRef(null),
-    password: useRef(null),
-  };
+  const identifierRef = useRef(null);
+  const emailRef = useRef(null);
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
 
   const updateField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -37,14 +43,23 @@ const Form = ({ mode = "login" }) => {
     setAlert(null);
   };
 
-  const isEmail = (v) => /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(v);
+  const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
   const focusFirstError = (err) => {
     const key = Object.keys(err)[0];
+
+    const refs = {
+      identifier: identifierRef,
+      email: emailRef,
+      username: usernameRef,
+      password: passwordRef,
+    };
     refs[key]?.current?.focus();
   };
 
-  // ================= VALIDATION =================
+  const navigate = useNavigate();
+
+  // ? ================= VALIDATION =================
 
   const validateLogin = () => {
     const e = {};
@@ -82,35 +97,27 @@ const Form = ({ mode = "login" }) => {
     return Object.keys(e).length === 0;
   };
 
-  // ================= SUBMIT =================
+  // ? ================= SUBMIT =================
+
+  const { loading, handleLogin, handleRegister } = useAuth();
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!validateLogin()) return;
 
-    setLoading(true);
     setAlert(null);
 
     try {
-      await axios.post(
-        "http://localhost:3000/api/auth/login",
-        {
-          email: loginMethod === "email" ? formData.identifier : undefined,
-          username:
-            loginMethod === "username" ? formData.identifier : undefined,
-          password: formData.password,
-        },
-        { withCredentials: true },
-      );
-
-      setAlert({ type: "success", message: "Login successful" });
-    } catch (err) {
-      setAlert({
-        type: "error",
-        message: err.response?.data?.message || "Network error. Try again.",
+      await handleLogin({
+        email: loginMethod === "email" ? formData.identifier : undefined,
+        username: loginMethod === "username" ? formData.identifier : undefined,
+        password: formData.password,
       });
-    } finally {
-      setLoading(false);
+
+      resetForm();
+      navigate("/");
+    } catch (err) {
+      setAlert({ type: "error", message: err.message || "Login failed" });
     }
   };
 
@@ -118,38 +125,29 @@ const Form = ({ mode = "login" }) => {
     e.preventDefault();
     if (!validateRegister()) return;
 
-    setLoading(true);
     setAlert(null);
 
     try {
-      await axios.post(
-        "http://localhost:3000/api/auth/register",
-        {
-          email: formData.email,
-          username: formData.username,
-          password: formData.password,
-          bio: formData.bio,
-          privateAccount: formData.privateAccount,
-        },
-        { withCredentials: true },
-      );
-
-      setAlert({
-        type: "success",
-        message: "Account created successfully",
+      await handleRegister({
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+        bio: formData.bio,
+        privateAccount: formData.privateAccount,
       });
+
+      resetForm();
+      navigate("/");
 
     } catch (err) {
       setAlert({
         type: "error",
-        message: err.response?.data?.message || "Registration failed",
+        message: err.message || "Registration failed",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
-  // ================= UI =================
+  // ? ================= UI ================= //
 
   return (
     <main className="auth-page">
@@ -220,7 +218,7 @@ const Form = ({ mode = "login" }) => {
                   onChange={(v) => updateField("identifier", v)}
                   error={errors.identifier}
                   label={loginMethod === "email" ? "Email" : "Username"}
-                  refEl={refs.identifier}
+                  refEl={identifierRef}
                 />
               ) : (
                 <Field
@@ -228,7 +226,7 @@ const Form = ({ mode = "login" }) => {
                   onChange={(v) => updateField("email", v)}
                   error={errors.email}
                   label="Email"
-                  refEl={refs.email}
+                  refEl={emailRef}
                 />
               )}
 
@@ -238,7 +236,7 @@ const Form = ({ mode = "login" }) => {
                   onChange={(v) => updateField("username", v)}
                   error={errors.username}
                   label="Username"
-                  refEl={refs.username}
+                  refEl={usernameRef}
                 />
               )}
 
@@ -248,7 +246,7 @@ const Form = ({ mode = "login" }) => {
                 onChange={(v) => updateField("password", v)}
                 error={errors.password}
                 label="Password"
-                refEl={refs.password}
+                refEl={passwordRef}
               />
 
               {!isLogin && (
@@ -300,10 +298,13 @@ const Field = ({ value, onChange, error, label, type = "text", refEl }) => (
       type={type}
       placeholder=" "
       value={value}
+      aria-invalid={!!error}
       onChange={(e) => onChange(e.target.value)}
     />
     <label>{label}</label>
-    <div className="field-error-space">{error && <span>{error}</span>}</div>
+    <div className="field-error-space">
+      {error && <span className="field-error">{error}</span>}
+    </div>
   </div>
 );
 
