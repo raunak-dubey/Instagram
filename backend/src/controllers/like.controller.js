@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import likeModel from "../models/like.model.js";
+import postModel from "../models/post.model.js";
 
 // ? =================== Like Post Controller ==================== //
 export const likePost = async (req, res) => {

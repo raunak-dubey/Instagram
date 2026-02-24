@@ -102,3 +102,29 @@ export const getPostDetailsController = async (req, res) => {
 
   }
 }
+
+// ? =================== Get All Feed Controller ==================== //
+export const getAllFeedController = async (req, res) => {
+  try {
+    const post = await postModel.find().populate('user')
+
+    if (post.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No post found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Post Fetch Successfully',
+      post,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch post.",
+    });
+  }
+}
