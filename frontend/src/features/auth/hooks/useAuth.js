@@ -1,42 +1,43 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { AuthContext } from "../context/auth.context";
-import { login, register } from "../services/auth.api";
+import { useNavigate } from "react-router";
+import { loginApi, registerApi } from "../services/auth.api";
 
-const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
+export const useAuth = () => {
+  const { user, setUser, setLoading, loading } = useContext(AuthContext);
+
+  const navigate = useNavigate();
+
+  const handleLogin = useCallback(async ({ identifier, password }) => {
+    setLoading(true);
+
+    try {
+      const response = await loginApi(identifier, password);
+      setUser(response.user);
+      navigate("/");
+    } finally {
+      setLoading(false);
     }
+  }, [setLoading, setUser, navigate]);
 
-    const { user, loading, setUser, setLoading } = context;
+  const handleRegister = useCallback(async ({ username, email, password, bio, isPrivate }) => {
+    setLoading(true);
 
-    const handleLogin = async (payload) => {
-        setLoading(true);
-        try {
-            const res = await login(payload);
-            setUser(res.user);
-        } catch (err) {
-            console.error("Login error:", err);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+      const response = await registerApi(
+        username,
+        email,
+        password,
+        bio,
+        isPrivate
+      );
 
-    const handleRegister = async (payload) => {
-        setLoading(true);
-        try {
-            const res = await register(payload);
-            setUser(res.user);
-        } catch (err) {
-            console.error("Registration error:", err);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
+      setUser(response.user);
+      navigate("/");
+    } finally {
+      setLoading(false);
     }
+  }, [setLoading, setUser, navigate]);
 
-    return { user, loading, handleLogin, handleRegister };
+  return { user, handleLogin, handleRegister, loading };
 }
-
-export default useAuth;

@@ -6,40 +6,42 @@ const api = axios.create({
 });
 
 const handleError = (err, fallback) => {
-  if (err.response?.data?.message) {
-    throw new Error(err.response.data.message);
-  }
+    if (err.response?.data?.message) {
+        throw new Error(err.response.data.message);
+    }
 
-  if (err.request) {
-    throw new Error("Network error. Check your connection.");
-  }
+    if (err.request) {
+        throw new Error("Network error. Check your connection.");
+    }
 
-  throw new Error(fallback);
+    throw new Error(fallback);
 };
 
-export const register = async (payload) => {
+export const loginApi = async (identifier, password) => {
     try {
-        const res = await api.post("/register", payload);
-        return res.data;
+        const response = await api.post("/login", {
+            identifier,
+            password,
+        });
+
+        return response.data;
     } catch (err) {
-        handleError(err, "Registration failed");
+        handleError(err, "Login failed. Please try again.");
     }
 };
 
-export const login = async (payload) => {
+export const registerApi = async (username, email, password, bio, isPrivate) => {
     try {
-        const res = await api.post("/login", payload);
-        return res.data;
-    } catch (err) {
-        handleError(err, "Login failed");
-    }
-};
+        const response = await api.post("/register", {
+            username,
+            email,
+            password,
+            bio,
+            isPrivate
+        });
 
-export const getMe = async () => {
-    try {
-        const res = await api.get("/get-me");
-        return res.data;
+        return response.data;
     } catch (err) {
-        handleError(err, "Session restore failed");
+        handleError(err, "Registration failed. Please try again.");
     }
 };

@@ -1,22 +1,6 @@
-@use './vars' as *;
-
 // ? Flex Center
 @mixin center {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-// ? Absolute Fill
-@mixin absolute-fill {
-  position: absolute;
-  inset: 0;
-}
-
-// ? Card Base
-@mixin card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  border-radius: $radius;
-  box-shadow: $shadow-soft;
 }

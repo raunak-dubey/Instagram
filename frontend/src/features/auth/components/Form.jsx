@@ -1,311 +1,212 @@
-import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import "../styles/form.scss";
-import useAuth from "../hooks/useAuth";
-import { useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
 
-const Form = ({ mode = "login" }) => {
+const Form = ({ mode }) => {
   const isLogin = mode === "login";
 
-  const [loginMethod, setLoginMethod] = useState("email");
+  const { handleLogin, handleRegister, loading } = useAuth();
 
-  const [alert, setAlert] = useState(null);
-
-  const initialFormState = {
+  // ? set formData value
+  const [formData, setFormData] = useState({
     identifier: "",
-    email: "",
     username: "",
+    email: "",
     password: "",
     bio: "",
-    privateAccount: false,
+    isPrivate: false,
+  });
+
+  const [formError, setFormError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  const [formData, setFormData] = useState(initialFormState);
-
-  const resetForm = () => {
-    setFormData(initialFormState);
-    setErrors({});
-    setAlert(null);
-  };
-
-  const [errors, setErrors] = useState({});
-
-  const identifierRef = useRef(null);
-  const emailRef = useRef(null);
-  const usernameRef = useRef(null);
-  const passwordRef = useRef(null);
-
-  const updateField = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-
-    // clear field error on typing
-    setErrors((prev) => ({ ...prev, [field]: null }));
-    setAlert(null);
-  };
-
-  const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-
-  const focusFirstError = (err) => {
-    const key = Object.keys(err)[0];
-
-    const refs = {
-      identifier: identifierRef,
-      email: emailRef,
-      username: usernameRef,
-      password: passwordRef,
-    };
-    refs[key]?.current?.focus();
-  };
-
-  
-  // ? ================= VALIDATION =================
-  
+  // ? Validation
   const validateLogin = () => {
-    const e = {};
-    
-    if (!formData.identifier.trim()) {
-      e.identifier =
-      loginMethod === "email" ? "Email required" : "Username required";
-    } else if (loginMethod === "email" && !isEmail(formData.identifier)) {
-      e.identifier = "Invalid email";
-    }
-    
-    if (!formData.password) e.password = "Password required";
-    
-    setErrors(e);
-    
-    if (Object.keys(e).length) focusFirstError(e);
-    
-    return Object.keys(e).length === 0;
+    if (!formData.identifier.trim()) return "Email or Username is required";
+    if (!formData.password.trim()) return "Password is required";
+    return null;
   };
-  
+
   const validateRegister = () => {
-    const e = {};
-    
-    if (!formData.email) e.email = "Email required";
-    else if (!isEmail(formData.email)) e.email = "Invalid email";
-    
-    if (!formData.username) e.username = "Username required";
-    if (!formData.password) e.password = "Password required";
-    if (formData.bio.length > 150) e.bio = "Bio max 150 characters";
-    
-    setErrors(e);
-    
-    if (Object.keys(e).length) focusFirstError(e);
-    
-    return Object.keys(e).length === 0;
+    if (!formData.username.trim()) return "Username is required";
+    if (!formData.email.trim()) return "Email is required";
+    if (!formData.password.trim()) return "Password is required";
+    if (formData.password.length < 6)
+      return "Password must be at least 6 characters";
+    return null;
   };
-  
-  // ? ================= SUBMIT =================
-  const navigate = useNavigate();
-  const { user, loading, handleLogin, handleRegister } = useAuth();
 
-  useEffect(() => {
-    if (user) navigate("/");
-  }, [user, navigate]);
-
-  const handleLoginSubmit = async (e) => {
+  // ? Handle login and register submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateLogin()) return;
 
-    setAlert(null);
+    const validationError = isLogin ? validateLogin() : validateRegister();
+
+    if (validationError) {
+      setFormError(validationError);
+      return;
+    }
 
     try {
-      await handleLogin({
-        email: loginMethod === "email" ? formData.identifier : undefined,
-        username: loginMethod === "username" ? formData.identifier : undefined,
-        password: formData.password,
-      });
-
-      resetForm();
+      if (isLogin) {
+        await handleLogin({
+          identifier: formData.identifier.trim(),
+          password: formData.password.trim(),
+        });
+      } else {
+        await handleRegister({
+          username: formData.username.trim(),
+          email: formData.email.trim(),
+          password: formData.password.trim(),
+          bio: formData.bio.trim(),
+          isPrivate: formData.isPrivate,
+        });
+      }
     } catch (err) {
-      setAlert({ type: "error", message: err.message || "Login failed" });
+      setFormError(err.message || "Something went wrong");
     }
   };
-
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateRegister()) return;
-
-    setAlert(null);
-
-    try {
-      await handleRegister({
-        email: formData.email,
-        username: formData.username,
-        password: formData.password,
-        bio: formData.bio,
-        privateAccount: formData.privateAccount,
-      });
-
-      resetForm();
-    } catch (err) {
-      setAlert({
-        type: "error",
-        message: err.message || "Registration failed",
-      });
-    }
-  };
-
-  // ? ================= UI ================= //
 
   return (
     <main className="auth-page">
-      {" "}
-      <div className="auth-container">
-        {" "}
-        <div className="auth-visual" />
-        <div className="auth-form-container">
-          <div className="auth-form">
-            <h1 className="form-title">
-              {isLogin ? "Welcome Back" : "Create Account"}
-            </h1>
+      <div className="auth-visual"></div>
+      <div className="auth-form-container">
+        <div className="auth-form">
+          <h1 className="heading">{isLogin ? "Login" : "Create Account"}</h1>
+          <p className="sub-para">
+            {isLogin
+              ? "Login to access your account"
+              : "Register to start sharing your moments"}
+          </p>
 
-            <p className="form-sub">
-              {isLogin
-                ? "Sign in to continue to your feed."
-                : "Register to start sharing your moments."}
-            </p>
+          <form onSubmit={handleSubmit}>
+            {isLogin ? (
+              <div className="field">
+                <label htmlFor="identifier">Email or Username</label>
+                <input
+                  type="text"
+                  placeholder="Enter email or username"
+                  name="identifier"
+                  required
+                  id="identifier"
+                  value={formData.identifier}
+                  onChange={handleChange}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="field">
+                  <label htmlFor="username">Username</label>
+                  <input
+                    type="text"
+                    placeholder="eg. John_Doe"
+                    required
+                    name="username"
+                    id="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                </div>
 
-            {alert && (
-              <div className={`alert ${alert.type}`}>{alert.message}</div>
+                <div className="field">
+                  <label htmlFor="email">Email</label>
+                  <input
+                    type="email"
+                    placeholder="eg. john@example.com"
+                    required
+                    name="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
+              </>
             )}
 
-            <form
-              onSubmit={isLogin ? handleLoginSubmit : handleRegisterSubmit}
-              noValidate
-            >
-              {isLogin && (
-                <div
-                  className={`segmented ${
-                    loginMethod === "username" ? "username" : ""
-                  }`}
-                >
-                  <button
-                    type="button"
-                    className={`segmented-btn ${
-                      loginMethod === "email" ? "active" : ""
-                    }`}
-                    onClick={() => {
-                      setLoginMethod("email");
-                      updateField("identifier", "");
-                      setErrors({});
-                    }}
-                  >
-                    Email
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`segmented-btn ${
-                      loginMethod === "username" ? "active" : ""
-                    }`}
-                    onClick={() => {
-                      setLoginMethod("username");
-                      updateField("identifier", "");
-                      setErrors({});
-                    }}
-                  >
-                    Username
-                  </button>
-                </div>
-              )}
-
-              {/* identifier / email */}
-              {isLogin ? (
-                <Field
-                  value={formData.identifier}
-                  onChange={(v) => updateField("identifier", v)}
-                  error={errors.identifier}
-                  label={loginMethod === "email" ? "Email" : "Username"}
-                  refEl={identifierRef}
-                />
-              ) : (
-                <Field
-                  value={formData.email}
-                  onChange={(v) => updateField("email", v)}
-                  error={errors.email}
-                  label="Email"
-                  refEl={emailRef}
-                />
-              )}
-
-              {!isLogin && (
-                <Field
-                  value={formData.username}
-                  onChange={(v) => updateField("username", v)}
-                  error={errors.username}
-                  label="Username"
-                  refEl={usernameRef}
-                />
-              )}
-
-              <Field
+            <div className="field">
+              <label htmlFor="password">Password</label>
+              <input
                 type="password"
+                placeholder="Enter your password"
+                required
+                name="password"
+                id="password"
                 value={formData.password}
-                onChange={(v) => updateField("password", v)}
-                error={errors.password}
-                label="Password"
-                refEl={passwordRef}
+                onChange={handleChange}
               />
+            </div>
 
-              {!isLogin && (
+            {!isLogin && (
+              <>
                 <div className="field">
+                  <label htmlFor="bio">Bio</label>
                   <input
-                    placeholder=" "
-                    value={formData.bio}
-                    onChange={(e) => updateField("bio", e.target.value)}
+                    type="text"
+                    placeholder="Enter your Bio"
                     maxLength={150}
+                    name="bio"
+                    id="bio"
+                    value={formData.bio}
+                    onChange={handleChange}
                   />
-                  <label>Bio</label>
-                  <div className="char-counter">{formData.bio.length}/150</div>
                 </div>
+
+                <div className="field checkbox-field">
+                  <label htmlFor="isPrivate">
+                    Do you want your account to be private?
+                  </label>
+                  <input
+                    type="checkbox"
+                    name="isPrivate"
+                    id="isPrivate"
+                    checked={formData.isPrivate}
+                    onChange={handleChange}
+                  />
+                </div>
+              </>
+            )}
+
+            {formError && <div className="form-error">{formError}</div>}
+
+            <button
+              type="submit"
+              className={`btn ${loading ? "loading" : ""}`}
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="spinner"></span>
+              ) : isLogin ? (
+                "Login"
+              ) : (
+                "Sign Up"
               )}
+            </button>
 
-              <button className="btn" disabled={loading} type="submit">
-                {loading ? (
-                  'Loading...'
-                ) : isLogin ? (
-                  "Login"
-                ) : (
-                  "Create Account"
-                )}
-              </button>
-
-              <div className="form-footer">
-                {isLogin ? (
-                  <p>
-                    Don't have an account? <Link to="/register">Register</Link>
-                  </p>
-                ) : (
-                  <p>
-                    Already have an account? <Link to="/login">Login</Link>
-                  </p>
-                )}
-              </div>
-            </form>
-          </div>
+            <div className="form-footer">
+              {isLogin ? (
+                <p>
+                  Don't have an account? <Link to="/register">Register</Link>
+                </p>
+              ) : (
+                <p>
+                  Already have an account? <Link to="/login">Login</Link>
+                </p>
+              )}
+            </div>
+          </form>
         </div>
       </div>
     </main>
   );
 };
-
-const Field = ({ value, onChange, error, label, type = "text", refEl }) => (
-  <div className={`field ${error ? "has-error" : ""}`}>
-    <input
-      ref={refEl}
-      type={type}
-      placeholder=" "
-      value={value}
-      aria-invalid={!!error}
-      onChange={(e) => onChange(e.target.value)}
-    />
-    <label>{label}</label>
-    <div className="field-error-space">
-      {error && <span className="field-error">{error}</span>}
-    </div>
-  </div>
-);
 
 export default Form;
