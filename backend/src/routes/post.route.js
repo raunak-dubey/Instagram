@@ -1,6 +1,6 @@
 import Router  from 'express'
 import { authMiddleware } from '../middlewares/auth.middleware.js';
-import { createPostController, getPostController, getPostDetailsController, getAllFeedController } from '../controllers/post.controller.js'
+import { createPostController, getPostController, getPostDetailsController, getAllFeedController, likePostController, unlikePostController } from '../controllers/post.controller.js'
 import uploadMiddleware from '../middlewares/upload.middleware.js';
 
 const postRouter = Router();
@@ -33,12 +33,12 @@ postRouter.get('/feed', authMiddleware, getAllFeedController)
  @route POST /api/posts/like
  @desc Like posts api [protected]
  */
-postRouter.post('/likes', authMiddleware, getAllFeedController)
+postRouter.post('/like/:postId', authMiddleware, likePostController)
 
 /**
  @route Delete /api/posts/like
  @desc unlike posts api [protected]
  */
-postRouter.delete('/likes', authMiddleware, getAllFeedController)
+postRouter.delete('/unlike/:postId', authMiddleware, unlikePostController)
 
 export default postRouter

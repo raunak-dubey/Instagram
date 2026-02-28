@@ -2,9 +2,11 @@ import userModel from '../models/user.model.js';
 import bcrypt from 'bcryptjs'
 import { generateToken } from '../utils/generateToken.js';
 
-// ? @desc    Register a new user
-// ? @route   POST /api/auth/register
-// ? @access  Public
+/**
+ @route POST /api/auth/register
+ @desc Register a new user
+ @access Public
+ */
 
 export const registerUser = async (req, res) => {
     try {
@@ -63,9 +65,11 @@ export const registerUser = async (req, res) => {
     }
 }
 
-// ? @desc    Login a user
-// ? @route   POST /api/auth/login
-// ? @access  Public
+/**
+ @route POST /api/auth/login
+ @desc Login a user
+ @access Public
+ */
 
 export const loginUser = async (req, res) => {
     try {

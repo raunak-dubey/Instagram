@@ -204,9 +204,14 @@
 
         .post-actions {
             display: flex;
-            justify-content: space-between;
+            gap: $gap;
             font-size: 0.85rem;
             color: $muted;
+
+            .like {
+                fill: #991111;
+                stroke: none;
+            }
         }
     }
 }
