@@ -1,16 +1,12 @@
-import { Router } from "express";
-import { registerUser, loginUser, getMeController } from "../controllers/auth.controller.js";
-import authMiddleware from "../middlewares/auth.middleware.js";
+import Router from 'express'
+import {registerUser, loginUser} from '../controllers/auth.controller.js'
 
-const authRouter = Router();
+const authRouter = Router()
 
-// ? =================== Register Api ==================== //
+// ? @route /api/auth/register
 authRouter.post('/register', registerUser)
 
-// ? =================== Login Api ==================== //
+// ? @route /api/auth/login
 authRouter.post('/login', loginUser)
 
-// ? =================== Get Me Api ==================== //
-authRouter.get('/get-me', authMiddleware, getMeController)
-
-export default authRouter;
+export default authRouter

@@ -1,23 +1,19 @@
-import { createBrowserRouter } from 'react-router'
-import Login from './features/auth/pages/Login'
-import Register from './features/auth/pages/Register'
-import Feed from './features/post/pages/Feed'
+import { createBrowserRouter } from 'react-router';
+import Register from './features/auth/pages/Register';
+import Login from './features/auth/pages/Login';
+import Feed from './features/posts/pages/Feed';
 
 export const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <h1>Welcome to Instagram Clone</h1>,
-    },
-    {
-        path: '/login',
-        Component: Login,
-    },
-    {
-        path: '/register',
-        Component: Register,
-    },
-    {
-        path: '/feed',
-        Component: Feed,
-    }
-])
+  {
+    path: "/",
+    Component: Feed,
+  },
+  {
+    path: "/register",
+    Component: Register
+  },
+  {
+    path: "/login",
+    Component: Login
+  }
+]);

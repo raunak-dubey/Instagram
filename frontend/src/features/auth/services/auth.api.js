@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const api = axios.create({
+const authApi = axios.create({
     baseURL: "http://localhost:3000/api/auth",
     withCredentials: true,
 });
@@ -19,7 +19,7 @@ const handleError = (err, fallback) => {
 
 export const loginApi = async (identifier, password) => {
     try {
-        const response = await api.post("/login", {
+        const response = await authApi.post("/login", {
             identifier,
             password,
         });
@@ -32,7 +32,7 @@ export const loginApi = async (identifier, password) => {
 
 export const registerApi = async (username, email, password, bio, isPrivate) => {
     try {
-        const response = await api.post("/register", {
+        const response = await authApi.post("/register", {
             username,
             email,
             password,

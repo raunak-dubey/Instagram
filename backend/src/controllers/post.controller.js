@@ -1,67 +1,63 @@
-import postModel from "../models/post.model.js";
-import ImageKit, { toFile } from "@imagekit/nodejs";
+import ImageKit, { toFile } from '@imagekit/nodejs';
+import postModel from '../models/post.model.js'
 
 const client = new ImageKit({
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY
-})
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+});
 
 // ? =================== Create Post Controller ==================== //
 export const createPostController = async (req, res) => {
-  try {
-    if (!req.file || !req.body.caption) {
-      return res.status(400).json({
-        success: false,
-        message: "Caption and Image file is required.",
-      });
+    try {
+        if (!req.file || !req.body.caption) {
+            return res.status(400).json({
+                success: false,
+                message: "Caption and Image file is required.",
+            });
+        }
+        const file = await client.files.upload({
+            file: await toFile(Buffer.from(req.file.buffer), 'file'),
+            fileName: req.file.originalname,
+            folder: 'insta-posts'
+        });
+
+        const post = await postModel.create({
+            caption: req.body.caption,
+            imgUrl: file.url,
+            user: req.user.id
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: "Post created successfully.",
+            post,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to create post.",
+        });
     }
-
-    const file = await client.files.upload({
-      file: await toFile(Buffer.from(req.file.buffer), 'file'),
-      fileName: req.file.originalname,
-      folder: 'instagram-posts'
-    });
-
-    const post = await postModel.create({
-      caption: req.body.caption,
-      imgUrl: file.url,
-      user: req.user.id
-    })
-
-    return res.status(201).json({
-      success: true,
-      message: "Post created successfully.",
-      post,
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Failed to create post.",
-    });
-
-  }
 }
 
 // ? =================== Get Post Controller ==================== //
 export const getPostController = async (req, res) => {
-  try {
-    const post = await postModel.find({
-      user: req.user.id
-    })
+    try {
+        const post = await postModel.find({
+            user: req.user.id
+        })
 
-    return res.status(200).json({
-      success: true,
-      message: 'Post Fetch Successfully',
-      post,
-    });
+        return res.status(200).json({
+            success: true,
+            message: 'Post Fetch Successfully',
+            post,
+        });
 
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch post.",
-    });
-
-  }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to fetch post.'
+        })
+    }
 }
 
 // ? =================== Get Post Details Controller ==================== //
@@ -127,4 +123,9 @@ export const getAllFeedController = async (req, res) => {
       message: "Failed to fetch post.",
     });
   }
+}
+
+// ? =================== Like Post Controller ==================== //
+export const likePostController = async () => {
+  
 }

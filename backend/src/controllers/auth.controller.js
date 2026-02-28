@@ -1,6 +1,6 @@
-import userModel from '../models/user.model.js'
+import userModel from '../models/user.model.js';
 import bcrypt from 'bcryptjs'
-import generateToken from '../utils/generateToken.js';
+import { generateToken } from '../utils/generateToken.js';
 
 // ? @desc    Register a new user
 // ? @route   POST /api/auth/register
@@ -36,7 +36,12 @@ export const registerUser = async (req, res) => {
 
         const token = generateToken(user._id)
 
-        res.cookie('Token', token)
+        res.cookie('Token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
+        })
 
         return res.status(201).json({
             success: true,
@@ -121,36 +126,5 @@ export const loginUser = async (req, res) => {
             success: false,
             message: 'Login Failed'
         })
-    }
-}
-
-// ? =================== Get Me Api ==================== //
-export const getMeController = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const user = await userModel.findById(userId)
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                bio: user.bio,
-                avatar: user.avatar,
-            },
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Server error while fetching user data.",
-        });
     }
 }

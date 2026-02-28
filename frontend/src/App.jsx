@@ -1,8 +1,8 @@
-import { RouterProvider } from "react-router/dom";
-import { router } from "./routes";
 import "./features/shared/global.scss";
+import { RouterProvider } from "react-router";
+import { router } from "./routes";
 import { AuthProvider } from "./features/auth/context/auth.provider";
-import { PostProvider } from "./features/post/context/post.provider";
+import { PostProvider } from "./features/posts/context/post.provider";
 
 const App = () => {
   return (

@@ -1,35 +1,34 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const userSchema = mongoose.Schema({
     username: {
         type: String,
         required: [true, 'Username is required'],
-        unique: [true, 'Username Already Exists']
+        unique: true
     },
     email: {
         type: String,
         required: [true, 'Email is required'],
-        unique: [true, 'Email Already Exists']
+        unique: true
     },
     password: {
         type: String,
-        required: [true, 'Password is required'],
-        select: false
+        select: false,
+        required: [true, 'Password is required']
+    },
+    bio: {
+        type: String,
+        default: ''
     },
     isPrivate: {
         type: Boolean,
         default: false
     },
-    bio: {
-        type: String,
-        default: ""
-    },
     avatar: {
         type: String,
         default: 'https://ik.imagekit.io/skietn14x/default_avatar.png'
     }
-
-}, { timestamps: true })
+});
 
 const userModel = mongoose.model('User', userSchema)
 export default userModel;

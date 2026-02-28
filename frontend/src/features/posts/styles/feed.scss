@@ -1,0 +1,251 @@
+.feed-layout {
+    background: $bg-tint;
+    min-height: 100vh;
+}
+
+// ? =========== Navbar ============= //
+.navbar {
+    width: 100%;
+    max-width: $container-width;
+    @include center;
+    justify-content: space-between;
+    padding: $gap;
+    background: $bg;
+    color: $text;
+
+    .logo {
+        @include center;
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: $text;
+    }
+
+    .search {
+        flex: 1;
+        max-width: 40%;
+        background: $bg-tint;
+        border: none;
+        padding: $gap-sm $gap;
+        border-radius: $radius;
+        color: $text;
+        outline: none;
+        font-size: 1rem;
+    }
+
+    .navbar-right {
+        @include center;
+        gap: $gap;
+
+        .profile-mini {
+            display: flex;
+            align-items: center;
+            gap: $gap-sm;
+
+            .avatar-sm {
+                width: 2.2rem;
+                height: 2.2rem;
+                border-radius: 50%;
+                background: $muted;
+
+                img {
+                    height: 100%;
+                    width: 100%;
+                    object-fit: cover;
+                }
+            }
+        }
+    }
+}
+
+// ? ======== Main Layout ========== //
+.home-page {
+    width: 100%;
+    max-width: $container-width;
+    display: flex;
+    gap: $gap;
+    margin-top: $gap;
+}
+
+// ? Card Base
+.card {
+    background: $bg;
+    border-radius: $radius;
+    padding: $gap;
+    box-shadow: $shadow;
+}
+
+// ? Left Sidebar
+.sidebar-left {
+    width: 22%;
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+    padding: $gap-sm;
+
+    .profile-card {
+        background-color: $bg;
+        padding: $gap-sm;
+        border-radius: $radius;
+
+        .user-info {
+            display: flex;
+            gap: $gap-sm;
+            align-items: center;
+
+            .avatar {
+                width: 3rem;
+                height: 3rem;
+                border-radius: 50%;
+                background: $muted;
+
+                img {
+                    height: 100%;
+                    width: 100%;
+                    object-fit: cover;
+                }
+            }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: $gap;
+
+            div {
+                text-align: center;
+
+                strong {
+                    display: block;
+                }
+
+                span {
+                    font-size: 0.85rem;
+                    color: $muted;
+                }
+            }
+        }
+    }
+
+    .menu {
+        background-color: $bg;
+        padding: $gap-sm;
+        border-radius: $radius;
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                padding: 0.75rem $gap;
+                border-radius: $radius;
+                cursor: pointer;
+                color: $text;
+
+                &.active {
+                    background: $accent;
+                    color: #fff;
+                }
+
+                &:hover {
+                    background: $bg-tint;
+                }
+            }
+        }
+    }
+}
+
+// ? ========== Feed Column ============ //
+.feed-section {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+
+    .post-card {
+        @extend .card;
+
+        .post-header {
+            display: flex;
+            gap: $gap-sm;
+            align-items: center;
+
+            .avatar {
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 50%;
+                background: $muted;
+
+                img {
+                    height: 100%;
+                    width: 100%;
+                    object-fit: cover;
+                }
+            }
+        }
+
+        .post-image {
+            width: 100%;
+            height: 15.625rem;
+            border-radius: $radius;
+            margin: $gap 0;
+            background: #ccc;
+
+            img {
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .post-caption {
+            margin-block: $gap;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: $muted;
+        }
+    }
+}
+
+/* right sidebar */
+.sidebar-right {
+    width: 27%;
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+
+    .user-item {
+        display: flex;
+        align-items: center;
+        gap: $gap-sm;
+        padding: 0.5rem 0;
+        color: $text;
+
+        .avatar-xs {
+            width: 1.875rem;
+            height: 1.875rem;
+            border-radius: 50%;
+            background: $muted;
+
+            img {
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+            }
+        }
+    }
+
+    .event-item {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid $hover;
+        color: $text;
+
+        &:last-child {
+            border: none;
+        }
+    }
+}
