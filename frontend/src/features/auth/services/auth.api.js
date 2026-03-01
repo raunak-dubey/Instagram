@@ -45,3 +45,12 @@ export const registerApi = async (username, email, password, bio, isPrivate) => 
         handleError(err, "Registration failed. Please try again.");
     }
 };
+
+export const getMeApi = async () => {
+    try {
+        const response = await authApi.get("/get-me");
+        return response.data;
+    } catch (err) {
+        handleError(err, "Failed to get user.");
+    }
+};

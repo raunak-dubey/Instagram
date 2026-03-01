@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import PostCard from "../components/PostCard";
 
 const Feed = () => {
-  const { handleGetFeed, loading, feed } = usePost();
+  const { handleGetFeed, loading, feed, handleLike, handleUnlike } = usePost();
 
   useEffect(() => {
     handleGetFeed();
@@ -67,7 +67,13 @@ const Feed = () => {
             </div>
           ) : feed && feed.length > 0 ? (
             feed.map((post) => (
-              <PostCard key={post._id} user={post.user} post={post} />
+              <PostCard
+                key={post._id}
+                post={post}
+                loading={loading}
+                handleLike={handleLike}
+                handleUnlike={handleUnlike}
+              />
             ))
           ) : (
             <div className="feed-empty">

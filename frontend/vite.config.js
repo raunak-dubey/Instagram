@@ -8,8 +8,8 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `
-        @use '/src/features/shared/_vars.scss' as *;
-        @use '/src/features/shared/mixins.scss' as *;
+        @use '/src/shared/_vars.scss' as *;
+        @use '/src/shared/mixins.scss' as *;
         `
       }
     }

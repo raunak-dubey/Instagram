@@ -167,6 +167,13 @@ export const likePostController = async (req, res) => {
       like,
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Post already liked",
+      });
+    }
+
     console.error(error)
     return res.status(500).json({
       success: false,
@@ -175,4 +182,49 @@ export const likePostController = async (req, res) => {
   }
 };
 
-export const unlikePostController = async () => { };
+export const unlikePostController = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const postId = req.params.postId;
+
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid post id.",
+      });
+    }
+
+    const post = await postModel.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found.",
+      });
+    }
+
+    const unLike = await likeModel.findOneAndDelete({
+      post: postId,
+      user: userId,
+    });
+
+    if (!unLike) {
+      return res.status(404).json({
+        success: false,
+        message: "The post is not liked",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Unliked the post Successfully",
+      unLike
+    });
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({
+      success: false,
+      message: "Failed to unlike post.",
+    });
+  }
+};

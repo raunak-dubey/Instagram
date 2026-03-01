@@ -36,7 +36,7 @@ postRouter.get('/feed', authMiddleware, getAllFeedController)
 postRouter.post('/like/:postId', authMiddleware, likePostController)
 
 /**
- @route Delete /api/posts/like
+ @route Delete /api/posts/unlike
  @desc unlike posts api [protected]
  */
 postRouter.delete('/unlike/:postId', authMiddleware, unlikePostController)

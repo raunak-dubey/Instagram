@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { loginApi, registerApi } from "../services/auth.api";
 
 export const useAuth = () => {
-  const { user, setUser, setLoading, loading } = useContext(AuthContext);
+  const { user, setUser, setLoading, loading, isAuthenticated } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -39,5 +39,5 @@ export const useAuth = () => {
     }
   }, [setLoading, setUser, navigate]);
 
-  return { user, handleLogin, handleRegister, loading };
+  return { user, handleLogin, handleRegister, loading, isAuthenticated };
 }

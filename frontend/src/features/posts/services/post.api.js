@@ -25,3 +25,21 @@ export const getAllFeedApi = async (payload) => {
         handleError(error, 'Failed to fetch feed. Please try again.')
     }
 }
+
+export const likePost = async (postId) => {
+    try {
+        const response = await postsApi.post('/posts/like/' + postId)
+        return response.data;
+    } catch (error) {
+        handleError(error, 'Failed to like the post. Please try again')
+    }
+}
+
+export const unlikePost = async (postId) => {
+    try {
+        const response = await postsApi.delete('/posts/unlike/' + postId)
+        return response.data;
+    } catch (error) {
+        handleError(error, 'Failed to unlike the post. Please try again')
+    }
+}

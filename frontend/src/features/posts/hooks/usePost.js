@@ -1,6 +1,6 @@
 import { useContext, useCallback } from "react";
 import { PostContext } from '../context/post.context';
-import { getAllFeedApi } from '../services/post.api'
+import { getAllFeedApi, likePost, unlikePost } from '../services/post.api'
 
 const usePost = () => {
     const { feed, setLoading, setFeed, post, loading } = useContext(PostContext);
@@ -16,7 +16,39 @@ const usePost = () => {
         }
     }, [setLoading, setFeed]);
 
-    return { feed, handleGetFeed, loading, post}
+    const handleLike = useCallback(async (postId) => {
+        try {
+            await likePost(postId)
+
+            setFeed(prev =>
+                prev.map(post =>
+                    post._id === postId
+                        ? { ...post, isLiked: true }
+                        : post
+                )
+            );
+        } catch (error) {
+            console.error(error.message);
+        }
+    }, [setFeed])
+
+    const handleUnlike = useCallback(async (postId) => {
+        try {
+            await unlikePost(postId)
+
+            setFeed(prev =>
+                prev.map(post =>
+                    post._id === postId
+                        ? { ...post, isLiked: false }
+                        : post
+                )
+            );
+        } catch (error) {
+            console.error(error.message);
+        }
+    }, [setFeed])
+
+    return { feed, handleGetFeed, loading, post, handleLike, handleUnlike }
 }
 
 export default usePost;
