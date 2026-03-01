@@ -1,0 +1,54 @@
+.create-post-page {
+    height: 100%;
+    width: 100%;
+    background-color: $bg-tint;
+    @include center;
+
+    .post-form-container {
+        border: 1px solid $muted;
+        padding: 2rem;
+        width: 40%;
+        background-color: $bg;
+        border-radius: $radius;
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: $gap;
+        }
+
+        .post-form {
+            display: flex;
+            flex-direction: column;
+
+            input {
+                width: 100%;
+                background-color: $bg-tint;
+                color: $text;
+                border: none;
+                padding: 0.8rem;
+                margin: $gap 0;
+                border-radius: $radius;
+                outline: none;
+            }
+
+            .post-image-label {
+                padding-block: 3rem;
+                border-radius: $radius;
+                background-color: $bg-tint;
+                @include center;
+                border: 1px dashed $muted;
+                margin-top: $gap-sm;
+            }
+
+            .button-container {
+                @include center;
+                gap: $gap;
+
+                .secondary {
+                    background-color: transparent;
+                    border: 1px solid $muted;
+                }
+            }
+        }
+    }
+}

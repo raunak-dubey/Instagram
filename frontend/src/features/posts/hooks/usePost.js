@@ -1,6 +1,6 @@
 import { useContext, useCallback } from "react";
 import { PostContext } from '../context/post.context';
-import { getAllFeedApi, likePost, unlikePost } from '../services/post.api'
+import { createPostApi, getAllFeedApi, likePost, unlikePost } from '../services/post.api'
 
 const usePost = () => {
     const { feed, setLoading, setFeed, post, loading } = useContext(PostContext);
@@ -48,7 +48,18 @@ const usePost = () => {
         }
     }, [setFeed])
 
-    return { feed, handleGetFeed, loading, post, handleLike, handleUnlike }
+    const handleCreatePost = useCallback(async (caption, imgUrl) => {
+        setLoading(true);
+
+        try {
+            const response = await createPostApi(caption, imgUrl);
+            setFeed([ response.post, ...feed]);
+        } finally {
+            setLoading(false)
+        }
+    }, [setFeed, setLoading, feed])
+
+    return { feed, handleGetFeed, loading, post, handleLike, handleUnlike, handleCreatePost }
 }
 
 export default usePost;

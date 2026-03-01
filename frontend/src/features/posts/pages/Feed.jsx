@@ -2,6 +2,8 @@ import "../styles/feed.scss";
 import usePost from "../hooks/usePost";
 import { useEffect } from "react";
 import PostCard from "../components/PostCard";
+import Navbar from '../../../shared/components/Navbar/Navbar'
+import { useNavigate } from "react-router";
 
 const Feed = () => {
   const { handleGetFeed, loading, feed, handleLike, handleUnlike } = usePost();
@@ -11,18 +13,11 @@ const Feed = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const navigate = useNavigate()
+
   return (
     <div className="feed-layout">
-      <header className="navbar">
-        <div className="logo">Social Media</div>
-        <input className="search" placeholder="Search" />
-        <div className="navbar-right">
-          <div className="profile-mini">
-            <div className="avatar-sm"></div>
-            <span>@jakobbsh</span>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="home-page">
         <aside className="sidebar-left">
@@ -53,7 +48,7 @@ const Feed = () => {
               <li className="active">Feed</li>
               <li>Message</li>
               <li>Explore</li>
-              <li>Create</li>
+              <li onClick={() => navigate('/create-post')}>Create</li>
               <li>Saved</li>
               <li>Liked</li>
             </ul>

@@ -1,0 +1,53 @@
+// ? =========== Navbar ============= //
+.navbar {
+    width: 100%;
+    max-width: $container-width;
+    @include center;
+    justify-content: space-between;
+    padding: $gap;
+    background: $bg;
+    color: $text;
+
+    .logo {
+        @include center;
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: $text;
+    }
+
+    .search {
+        flex: 1;
+        max-width: 40%;
+        background: $bg-tint;
+        border: none;
+        padding: $gap-sm $gap;
+        border-radius: $radius;
+        color: $text;
+        outline: none;
+        font-size: 1rem;
+    }
+
+    .navbar-right {
+        @include center;
+        gap: $gap;
+
+        .profile-mini {
+            display: flex;
+            align-items: center;
+            gap: $gap-sm;
+
+            .avatar-sm {
+                width: 2.2rem;
+                height: 2.2rem;
+                border-radius: 50%;
+                background: $muted;
+
+                img {
+                    height: 100%;
+                    width: 100%;
+                    object-fit: cover;
+                }
+            }
+        }
+    }
+}
