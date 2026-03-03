@@ -1,5 +1,5 @@
 import Router  from 'express'
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 import { createPostController, getPostController, getPostDetailsController, getAllFeedController, likePostController, unlikePostController } from '../controllers/post.controller.js'
 import uploadMiddleware from '../middlewares/upload.middleware.js';
 
